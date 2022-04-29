@@ -91,10 +91,21 @@ cocinaMucho cocinero tomates =
 -----------------------
 
 olla :: String -> Tomate -> Tomate
-olla liquido tomate = UnTomate ("cocido":caracteristicas tomate) (peso tomate * incremento liquido)
+olla liquido tomate = 
+  UnTomate ("cocido":caracteristicas tomate) 
+  (peso tomate * incremento liquido)
 
 incremento "aceite" = 1.1
 incremento "agua" = 1.2
+incremento x = 1
+
+
+cocina:: (Tomate -> Tomate)  -> [Tomate] -> Number
+cocina utensillo tomates =  sum (map peso (map utensillo tomates))
+
+
+plancha:: Tomate -> Tomate
+plancha tomate = tomate{peso=peso tomate - 1}
 
 
 freir tomate = olla "aceite" tomate
@@ -108,3 +119,9 @@ licuar intensidad tomate = intensidad * peso tomate
 
 pepe = UnCocinero "pepe licuador" (licuar 2)
 pepa = UnCocinero "pepa super licuadora" (licuar 10)
+
+
+mejorFuncion::( Ord b) => (a-> b) -> (a-> b) -> a -> a-> b
+mejorFuncion h p v t
+ | h v > p v = h t
+ | otherwise = p t

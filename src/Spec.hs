@@ -30,4 +30,5 @@ correrTests = hspec $ do
       rayar tomate3 `shouldBe` 100
   it "La rayadora suma toda las partes y le resta la cantidad" $ do
       rayadora algunosTomates `shouldBe` (50 +60 +100 - 3)
-  
+  it "cocina de tomates con olla con agua" $ do
+      cocina (olla "agua") algunosTomates `shouldBe`(60 + 72+ 145.2)
