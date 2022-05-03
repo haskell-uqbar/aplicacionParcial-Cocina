@@ -7,121 +7,130 @@ doble numero = numero + numero
 triple :: Number -> Number
 triple numero = numero + numero + numero
 
-absoluto :: Number -> Number
-absoluto n 
- | n >= 0 = n
- | n < 0 = (-n)
+between:: Ord a => a -> a -> a -> Bool
+between minimo maximo elemento = minimo <= elemento && maximo >= elemento
+
+f7 = even.length
+
+f8 = map doble.filter even
+
+---------
 
 
 
 ------------
 
-data Tomate = UnTomate {
+data Alimento = UnAlimento {
+    nombre:: String,
     caracteristicas:: [String],
-    peso:: Number 
+    sabor:: Number 
 } deriving Show
 
-tomate1 = UnTomate ["grande", "lindo","rojo"] 50
-tomate2 = UnTomate ["rojo","maduro"] 60
-tomate3 = UnTomate [] 121
+choclo = UnAlimento "choclo" ["lindo","amarillo"] 50
+cala = UnAlimento "calabaza" ["maduro"] 60
+calapodrida = UnAlimento "calabaza" ["maduro","podrido"] 60
 
-algunosTomates = [tomate1,tomate2,tomate3]
+carne = UnAlimento "bife" [] 120
 
-cortar :: Tomate -> Number
-cortar tomate = div (peso tomate) 10  
+algunosAlimentos = [choclo,cala,carne]
 
-cortadora :: [ Tomate ] -> Number
-cortadora tomates = multiprocesadora cortar tomates
 
--------------------
+plancha:: Alimento->Alimento
+plancha (UnAlimento nombre caracteristicas sabor) = 
+  (UnAlimento nombre ("cocido":caracteristicas) (sabor + 10)) 
 
-rayar :: Tomate -> Number
-rayar tomate  = min (peso tomate) 100
+provoletera:: Alimento->Alimento
+provoletera (UnAlimento nombre caracteristicas sabor) = 
+  (UnAlimento nombre caracteristicas (doble sabor)) 
 
-rayadora :: [ Tomate ] -> Number
-rayadora tomates = multiprocesadora rayar tomates
 
-rayadoFino :: Tomate -> Number
-rayadoFino tomate  = round (peso tomate * 1.5)
 
---rayadoraFina :: [ Tomate ] -> Number
---rayadoraFina tomates = sum (map rayadoFino tomates) - length tomates
+-- Es buena cocina si cocino todos untos a la plancha una serie de alimentos 
+-- y consiguo que tenga buen sabor
 
-multiprocesadora:: (Tomate -> Number) -> [ Tomate ] -> Number
-multiprocesadora accesorio tomates = sum (map accesorio tomates) - length tomates
+buenPlatoALaPlancha:: [Alimento] -> Bool
+buenPlatoALaPlancha alimentos = buenPlato  plancha  alimentos
+  
+buenPlatoALaProvoletera:: [Alimento] -> Bool
+buenPlatoALaProvoletera alimentos = buenPlato  provoletera  alimentos
+ 
+buenPlato:: (Alimento -> Alimento) -> [Alimento] -> Bool
+buenPlato  utensillo  alimentos = sum (map sabor (map utensillo alimentos)) > 200
 
 ---------------------
 
-trabajaConCuchillo:: Tomate -> Number
-trabajaConCuchillo tomate 
- | maduro tomate = cortar tomate 
- | otherwise = 1
+olla :: String -> Alimento -> Alimento
+olla liquido alimento = 
+  UnAlimento (nombre alimento) ("cocido":caracteristicas alimento) 
+  (sabor alimento * incremento liquido)
 
-trabajaConRayador:: Tomate -> Number
-trabajaConRayador tomate 
- | maduro tomate = rayar tomate 
- | otherwise = 1
+incremento "aceite" = 1.8
+incremento "agua" = 1.2
+incremento x = 1
 
-maduro tomate = elem "maduro" (caracteristicas tomate)
 
------------------------------------------
+cocinaCon::(Alimento -> Alimento)->Alimento -> Number
+cocinaCon accesorio alimento 
+  | enMalEstado alimento = 0
+  | otherwise = sabor (accesorio alimento)
 
-trabajaCon :: (Tomate -> Number) -> Tomate ->  Number
-trabajaCon accesorio tomate 
- | maduro tomate = accesorio tomate 
- | otherwise = 1
 
+
+enMalEstado alimento = elem "podrido" (caracteristicas alimento)
+
+academiaFritanga cocinero = cocinero{accesorioPreferido = olla "aceite"}
+academiaSuperFritanga cocinero = cocinero{accesorioPreferido = olla "aceite".accesorioPreferido cocinero}
+academia accesorioAdicional cocinero = cocinero{accesorioPreferido = accesorioAdicional.accesorioPreferido cocinero}
+--academiaMultiple accesorios cocinero = cocinero{accesorioPreferido = last accesorios.accesorioPreferido cocinero}
 
 ---------------------------
 
 --Los cocineros
 data Cocinero = UnCocinero {
-  nombre :: String,
-  accesorioPreferido:: Tomate -> Number
+  apodo :: String,
+  accesorioPreferido:: Alimento -> Alimento
 }
 
-german = UnCocinero "German" cortar
-donato = UnCocinero "Donato" rayar
+german = UnCocinero "German" plancha
+donato = UnCocinero "Donato" (olla "aceite")
+damian = UnCocinero "Damian" (olla "agua".provoletera)
+aguanteLaFritanga = UnCocinero "el rey del aciete" (olla "aceite".olla "aceite".olla "aceite")
 
-cocinaMucho:: Cocinero -> [Tomate] -> Bool
-cocinaMucho cocinero tomates = 
-  (multiprocesadora (accesorioPreferido cocinero) tomates) > 50
+cocinaBien:: Cocinero -> [Alimento] -> Bool
+cocinaBien cocinero alimentos = buenPlato (accesorioPreferido cocinero) alimentos
 
 
 -----------------------
 
-olla :: String -> Tomate -> Tomate
-olla liquido tomate = 
-  UnTomate ("cocido":caracteristicas tomate) 
-  (peso tomate * incremento liquido)
+--freir tomate = olla "aceite" tomate
+freir = olla "aceite"
+hervir = olla "agua"
 
-incremento "aceite" = 1.1
-incremento "agua" = 1.2
-incremento x = 1
-
-
-cocina:: (Tomate -> Tomate)  -> [Tomate] -> Number
-cocina utensillo tomates =  sum (map peso (map utensillo tomates))
-
-
-plancha:: Tomate -> Tomate
-plancha tomate = tomate{peso=peso tomate - 1}
-
-
-freir tomate = olla "aceite" tomate
-hervir tomate = olla "agua" tomate
-
+pii = 3.14
 -----------------
 
-licuar :: Number -> Tomate -> Number
-licuar intensidad tomate = intensidad * peso tomate
 
 
-pepe = UnCocinero "pepe licuador" (licuar 2)
-pepa = UnCocinero "pepa super licuadora" (licuar 10)
 
 
-mejorFuncion::( Ord b) => (a-> b) -> (a-> b) -> a -> a-> b
-mejorFuncion h p v t
- | h v > p v = h t
- | otherwise = p t
+laMejorFuncion::( Ord b) => (a-> b) -> (a-> b) -> a -> (a -> b)
+
+laMejorFuncion funcion1 funcion2 valor 
+ | funcion1 valor > funcion2 valor = funcion1 
+ | otherwise = funcion2 
+
+
+
+
+f2 = even
+
+losTresPrimeros = take 3
+
+f4 = (2/)
+
+f5 = (/2)
+
+
+duplicaYSuma3YSeFijaSiEsPar x = even (x * 2 + 3)
+
+aplicacionSucesiva x y z = x (y z)

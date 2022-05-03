@@ -11,24 +11,20 @@ correrTests = hspec $ do
   describe "Test de multiplicaciones" $ do
     it "el triple de un numero" $ do
       triple 2 `shouldBe` 6
-  describe "Test de absoluto" $ do
-    it "el absoltuo de un numero positivo" $ do
-      absoluto 2 `shouldBe` 2
-    it "el absoluto de 0" $ do
-      absoluto 0 `shouldBe` 0
-    it "el absoluto de un numero negativo" $ do
-      absoluto (-10) `shouldBe` 10
   describe "Test de cocina" $ do
-   it "Al cortar un tomate obtengo la cantidad de partes, la décima parte de los gramos" $ do
-      cortar tomate1 `shouldBe` 5
-      cortar tomate3 `shouldBe` 12
-   it "La cortadora suma toda las partes y le resta la cantidad" $ do
-      cortadora algunosTomates `shouldBe` 20
-   it "La rayadora de tomates raya en pedacitos por gramo" $ do
-      rayar tomate1 `shouldBe` 50
-  it "Debería tener máximo 100" $ do
-      rayar tomate3 `shouldBe` 100
-  it "La rayadora suma toda las partes y le resta la cantidad" $ do
-      rayadora algunosTomates `shouldBe` (50 +60 +100 - 3)
-  it "cocina de tomates con olla con agua" $ do
-      cocina (olla "agua") algunosTomates `shouldBe`(60 + 72+ 145.2)
+   it "la plancha mejor el sabor del choclo" $ do
+      sabor (plancha choclo) `shouldBe` 60
+   it "un plato a la plancha con solo choclo y calabaza no es un buen plato" $ do
+      buenPlatoALaPlancha [choclo,cala] `shouldBe` False
+   it "un plato a la plancha con choclo, calabaza y carne es un buen plato" $ do
+      buenPlatoALaPlancha algunosAlimentos `shouldBe` True
+   it "un plato a la plancha con choclo, calabaza y carne es un buen plato" $ do
+      buenPlato plancha algunosAlimentos `shouldBe` True
+   it "un plato a la proveletera con choclo, calabaza es un buen plato" $ do
+      buenPlato provoletera [choclo,cala] `shouldBe` True
+   it "un plato frito con choclo, calabaza es un buen plato" $ do
+      buenPlato (olla "aceite") [choclo,cala] `shouldBe` False
+   it "un plato frito con choclo, calabaza y carne es un buen plato" $ do
+      buenPlato (olla "aceite") algunosAlimentos `shouldBe` True
+   it "un plato herbido con choclo, calabaza no es un buen plato" $ do
+      buenPlato (olla "agua") [choclo,cala] `shouldBe` False
